@@ -11,12 +11,12 @@ import numpy as np
 
 STAGE = "Creating base model" ## <<< change stage name 
 
-# logging.basicConfig(
-#     filename=os.path.join("logs", 'running_logs.log'), 
-#     level=logging.INFO, 
-#     format="[%(asctime)s: %(levelname)s: %(module)s]: %(message)s",
-#     filemode="a"
-#     )
+logging.basicConfig(
+    filename=os.path.join("logs", 'running_logs.log'), 
+    level=logging.INFO, 
+    format="[%(asctime)s: %(levelname)s: %(module)s]: %(message)s",
+    filemode="a"
+    )
 
 
 def main(config_path):
@@ -55,7 +55,25 @@ def main(config_path):
     model.compile(optimizer=optimizer_val, loss=loss_func,metrics=matrics_method)
 
     model.summary()
-        
+
+    ## Train the model 
+    epochs_num = 10
+    Validation = (X_cv, y_cv)
+    history = model.fit(
+        X_train, y_train,
+        epochs=epochs_num,
+        validation_data=Validation,
+        verbose=2)
+
+    ## save the model
+    model_dir_path = os.path.join("artifacts","models")
+    create_directories([model_dir_path])
+
+    model_file_path = os.path.join(model_dir_path, "base_model.h5")
+    model.save(model_file_path)
+
+    logging.info(f"base model is saved at {model_file_path}")
+    logging.info(f"evaluation matrics {model.evaluate(X_test, y_test)}")             
 
 
 if __name__ == '__main__':
